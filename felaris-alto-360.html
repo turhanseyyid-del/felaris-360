@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Felaris | Alto 360° Görünüm</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#fff}body{font-family:Raleway,Arial,sans-serif;color:#343434}.viewer{width:100%;max-width:650px;margin:auto}.stage{width:100%;aspect-ratio:1/1;position:relative;overflow:hidden;background:#fff;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}.stage.dragging{cursor:grabbing}.stage:focus-visible{outline:2px solid #AEC6D4;outline-offset:-2px}.stage img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none;-webkit-user-drag:none}.hint{text-align:center;font-size:12px;color:#777;padding:10px 8px 14px}.hint span{font-size:18px;color:#637889;vertical-align:-1px;margin-right:7px}
+</style>
+</head>
+<body>
+<div class="viewer">
+<div class="stage" id="stage" tabindex="0" role="slider" aria-label="Alto ürününü 360 derece döndür" aria-valuemin="1" aria-valuemax="24" aria-valuenow="1">
+<img id="photo" src="https://felaris.tsoftstatic.com/Data/EditorFiles/Alto-%C3%9Cr%C3%BCn-Detay-Sayfas%C4%B1-G%C3%B6rseller/360-fotolar/1.webp" alt="Felaris Alto 360 derece ürün görünümü" draggable="false">
+</div>
+<div class="hint"><span aria-hidden="true">↔</span>Döndürmek için sürükleyin</div>
+</div>
+<script>
+(()=>{
+'use strict';
+const base='https://felaris.tsoftstatic.com/Data/EditorFiles/Alto-%C3%9Cr%C3%BCn-Detay-Sayfas%C4%B1-G%C3%B6rseller/360-fotolar/';
+const count=24,stage=document.getElementById('stage'),photo=document.getElementById('photo');
+const urls=Array.from({length:count},(_,i)=>base+(i+1)+'.webp');
+let frame=0,active=false,lastX=0,delta=0,pointerId=null;
+function show(n){frame=(n%count+count)%count;photo.src=urls[frame];stage.setAttribute('aria-valuenow',String(frame+1));}
+urls.slice(1).forEach(src=>{const img=new Image();img.src=src;});
+stage.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;active=true;pointerId=e.pointerId;lastX=e.clientX;delta=0;stage.classList.add('dragging');if(e.pointerType==='mouse')stage.setPointerCapture(e.pointerId);});
+stage.addEventListener('pointermove',e=>{if(!active||e.pointerId!==pointerId)return;delta+=e.clientX-lastX;lastX=e.clientX;const steps=Math.trunc(delta/12);if(steps){show(frame+steps);delta-=steps*12;}});
+function stop(e){if(e&&pointerId!==null&&e.pointerId!==pointerId)return;active=false;pointerId=null;delta=0;stage.classList.remove('dragging');}
+stage.addEventListener('pointerup',stop);stage.addEventListener('pointercancel',stop);stage.addEventListener('lostpointercapture',stop);
+stage.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();show(frame+(e.key==='ArrowRight'?1:-1));}});
+})();
+</script>
+</body>
+</html>
