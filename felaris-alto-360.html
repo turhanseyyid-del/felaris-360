@@ -4,150 +4,201 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Felaris | Alto 360°</title>
+
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:transparent}
-.viewer{
-  width:100%;
-  max-width:240px;
-  margin:auto;
-  font-family:Raleway,Arial,sans-serif;
-  color:#343434;
+* {
+  box-sizing: border-box;
 }
-.stage{
-  width:100%;
-  aspect-ratio:1/1;
-  overflow:hidden;
-  cursor:grab;
-  touch-action:pan-y;
-  user-select:none;
-  -webkit-user-select:none;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
 }
-.stage:active{cursor:grabbing}
-.stage img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  pointer-events:none;
+
+.viewer {
+  width: 100%;
+  margin: 0 auto;
+  font-family: Raleway, Arial, sans-serif;
+  color: #343434;
 }
-.caption{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:3px;
-  padding-top:8px;
-  text-align:center;
+
+.stage {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.caption strong{
-  font-size:14px;
-  font-weight:500;
-  letter-spacing:1px;
-  color:#343434;
+
+.stage:active {
+  cursor: grabbing;
 }
-.caption span{
-  font-size:10px;
-  font-weight:400;
-  color:#777;
-  letter-spacing:.2px;
+
+.stage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
-.stage:focus-visible{
-  outline:2px solid #AEC6D4;
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 0 5px;
+  text-align: center;
+}
+
+.caption strong {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #343434;
+}
+
+.caption span {
+  font-size: 10px;
+  font-weight: 400;
+  color: #777;
+  letter-spacing: .2px;
+}
+
+.stage:focus-visible {
+  outline: 2px solid #AEC6D4;
+  outline-offset: -2px;
 }
 </style>
 </head>
+
 <body>
 
 <div class="viewer">
-  <div class="stage" id="stage"
-       tabindex="0"
-       role="slider"
-       aria-label="Alto 360 derece görünüm"
-       aria-valuemin="1"
-       aria-valuemax="24"
-       aria-valuenow="1">
-    <img id="photo"
-         src="https://felaris.tsoftstatic.com/Data/EditorFiles/Alto-Ürün-Detay-Sayfası-Görseller/360-fotolar/1.webp"
-         alt="Alto beton tekli sarkıt"
-         draggable="false">
+
+  <div
+    class="stage"
+    id="stage"
+    tabindex="0"
+    role="slider"
+    aria-label="Alto 360 derece görünüm"
+    aria-valuemin="1"
+    aria-valuemax="24"
+    aria-valuenow="1"
+  >
+    <img
+      id="photo"
+      src="https://felaris.tsoftstatic.com/Data/EditorFiles/Alto-Ürün-Detay-Sayfası-Görseller/360-fotolar/1.webp"
+      alt="Alto beton tekli sarkıt"
+      draggable="false"
+    >
   </div>
 
   <div class="caption">
     <strong>360°</strong>
     <span>Döndürmek için sürükleyin</span>
   </div>
+
 </div>
 
 <script>
-(function(){
-  const base="https://felaris.tsoftstatic.com/Data/EditorFiles/Alto-Ürün-Detay-Sayfası-Görseller/360-fotolar/";
-  const photo=document.getElementById("photo");
-  const stage=document.getElementById("stage");
-  const total=24;
-  let frame=0,dragging=false,lastX=0,offset=0,pointer=null;
+(function() {
 
-  function show(n){
-    frame=((n%total)+total)%total;
-    photo.src=base+(frame+1)+".webp";
-    stage.setAttribute("aria-valuenow",frame+1);
+  const base =
+    "https://felaris.tsoftstatic.com/Data/EditorFiles/Alto-Ürün-Detay-Sayfası-Görseller/360-fotolar/";
+
+  const photo = document.getElementById("photo");
+  const stage = document.getElementById("stage");
+
+  const total = 24;
+
+  let frame = 0;
+  let dragging = false;
+  let lastX = 0;
+  let offset = 0;
+  let pointer = null;
+
+  function show(n) {
+    frame = ((n % total) + total) % total;
+
+    photo.src = base + (frame + 1) + ".webp";
+
+    stage.setAttribute(
+      "aria-valuenow",
+      frame + 1
+    );
   }
 
-  function preload(){
-    for(let i=2;i<=total;i++){
-      const img=new Image();
-      img.src=base+i+".webp";
+  function preload() {
+    for (let i = 2; i <= total; i++) {
+      const img = new Image();
+      img.src = base + i + ".webp";
     }
   }
 
-  if("requestIdleCallback" in window){
+  if ("requestIdleCallback" in window) {
     requestIdleCallback(preload);
-  }else{
-    setTimeout(preload,500);
+  } else {
+    setTimeout(preload, 500);
   }
 
-  stage.addEventListener("pointerdown",e=>{
-    if(e.pointerType==="mouse"&&e.button!==0)return;
-    dragging=true;
-    pointer=e.pointerId;
-    lastX=e.clientX;
-    offset=0;
-    if(e.pointerType==="mouse"){
+  stage.addEventListener("pointerdown", function(e) {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+
+    dragging = true;
+    pointer = e.pointerId;
+    lastX = e.clientX;
+    offset = 0;
+
+    if (e.pointerType === "mouse") {
       stage.setPointerCapture(e.pointerId);
     }
   });
 
-  stage.addEventListener("pointermove",e=>{
-    if(!dragging||e.pointerId!==pointer)return;
-    offset+=e.clientX-lastX;
-    lastX=e.clientX;
-    const steps=Math.trunc(offset/10);
-    if(steps){
-      show(frame+steps);
-      offset-=steps*10;
+  stage.addEventListener("pointermove", function(e) {
+    if (!dragging || e.pointerId !== pointer) return;
+
+    offset += e.clientX - lastX;
+    lastX = e.clientX;
+
+    const steps = Math.trunc(offset / 10);
+
+    if (steps) {
+      show(frame + steps);
+      offset -= steps * 10;
     }
   });
 
-  function stop(){
-    dragging=false;
-    pointer=null;
-    offset=0;
+  function stop() {
+    dragging = false;
+    pointer = null;
+    offset = 0;
   }
 
-  stage.addEventListener("pointerup",stop);
-  stage.addEventListener("pointercancel",stop);
-  stage.addEventListener("lostpointercapture",stop);
+  stage.addEventListener("pointerup", stop);
+  stage.addEventListener("pointercancel", stop);
+  stage.addEventListener("lostpointercapture", stop);
 
-  stage.addEventListener("keydown",e=>{
-    if(e.key==="ArrowRight"){
+  stage.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowRight") {
       e.preventDefault();
-      show(frame+1);
+      show(frame + 1);
     }
-    if(e.key==="ArrowLeft"){
+
+    if (e.key === "ArrowLeft") {
       e.preventDefault();
-      show(frame-1);
+      show(frame - 1);
     }
   });
+
 })();
 </script>
+
 </body>
 </html>
